@@ -27,8 +27,8 @@ jobs:
           docker push ghcr.io/${{ github.actor }}/my-app:latest
 
       - name: Auto-Link Package to Repo
-        run: |
-          gh api -X PATCH "https://api.github.com/orgs/imgnx/packages/container/my-next-app" \
-          -f repository="imgnx/my-next-app"
         env:
-          TOKEN: ${{ secrets.TOKEN }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh api -X PATCH "https://api.github.com/orgs/${{ github.actor }}/packages/container/my-next-app" \
+          -f repository="${{ github.repository }}"
