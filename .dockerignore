@@ -1,0 +1,7 @@
+node_modules
+.next
+.yarn
+.git
+Dockerfile
+.dockerignore
+.env
