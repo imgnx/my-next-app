@@ -10,7 +10,7 @@ COPY package.json yarn.lock ./
 
 # Install dependencies using the correct Yarn version
 RUN corepack prepare yarn@4.7.0 --activate && \
-    yarn install --frozen-lockfile
+    yarn install --immutable
 
 # Copy the rest of the application
 COPY . .
