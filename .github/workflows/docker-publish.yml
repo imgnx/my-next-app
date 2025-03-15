@@ -21,10 +21,10 @@ jobs:
 
       - name: Build Docker image
         run: |
-          docker build -t ghcr.io/${{ github.actor }}/my-app:latest .
+          docker build -t ghcr.io/${{ github.actor }}/my-next-app:latest .
       - name: Push Docker image
         run: |
-          docker push ghcr.io/${{ github.actor }}/my-app:latest
+          docker push ghcr.io/${{ github.actor }}/my-next-app:latest
 
       - name: Auto-Link Package to Repo
         env:
