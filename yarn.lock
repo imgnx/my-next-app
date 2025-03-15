@@ -852,9 +852,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"my-docker-app@workspace:.":
+"my-next-app@workspace:.":
   version: 0.0.0-use.local
-  resolution: "my-docker-app@workspace:."
+  resolution: "my-next-app@workspace:."
   dependencies:
     husky: "npm:^9.1.7"
     next: "npm:^15.2.2"
