@@ -3,11 +3,14 @@ FROM node:22 AS builder
 
 WORKDIR /app
 
-# Copy only package manager files first (for caching)
+# Copy package manager files first (for caching)
 COPY package.json yarn.lock ./
 
 # Enable Yarn v4 explicitly
 RUN corepack enable && corepack prepare yarn@4.7.0 --activate
+
+# Force Yarn to use `node_modules` instead of PnP
+ENV YARN_NODE_LINKER=node-modules
 
 # Install dependencies
 RUN yarn install --immutable
@@ -25,6 +28,9 @@ WORKDIR /app
 
 # Enable Yarn in runtime container
 RUN corepack enable && corepack prepare yarn@4.7.0 --activate
+
+# Force Yarn to use `node_modules`
+ENV YARN_NODE_LINKER=node-modules
 
 # Copy necessary files from builder stage
 COPY --from=builder /app/dist ./dist
