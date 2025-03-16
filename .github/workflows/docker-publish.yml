@@ -10,40 +10,46 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: read
-      packages: write
+      packages: write # ✅ Required for GHCR
       id-token: write
 
     steps:
-      - name: Checkout repo
+      - name: Debug GITHUB_TOKEN permissions
+        run: |
+          gh auth status
+          gh api /user --jq '.scopes'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
-
+      # ✅ Ensure GitHub Actions can push to GHCR using GITHUB_TOKEN
       - name: Log in to GHCR
-        uses: docker/login-action@v3
-        with:
-          registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
+        run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u imgnxorg --password-stdin
 
-      - name: Extract metadata for Docker
-        id: meta
-        uses: docker/metadata-action@v5
-        with:
-          images: ghcr.io/${{ github.repository }}
-          labels: |
-            org.opencontainers.image.source=https://github.com/${{ github.repository }}
-          tags: |
-            type=raw,value=latest
-            type=sha,prefix={{branch}}-
+      # ✅ Debugging step: Verify GITHUB_TOKEN permissions
+      - name: Check GITHUB_TOKEN permissions
+        run: |
+          gh auth status
+          gh api /user --jq '.scopes'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Build and Push Docker image
-        uses: docker/build-push-action@v5
-        with:
-          context: .
-          push: true
-          tags: ${{ steps.meta.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
+      # ✅ Build and tag the Docker image
+      - name: Build Docker image
+        run: |
+          docker build -t ghcr.io/imgnxorg/my-next-app:latest .
+
+      # ✅ Push Docker image to GHCR
+      - name: Push Docker image
+        run: |
+          docker push ghcr.io/imgnxorg/my-next-app:latest
+
+      # ✅ Automatically link the package to the repository
+      - name: Auto-Link Package to Repo
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh api -X PATCH "https://api.github.com/orgs/imgnxorg/packages/container/my-next-app" \
+          -f repository="imgnxorg/my-next-app"
