@@ -16,8 +16,9 @@ jobs:
     steps:
       - name: Debug GITHUB_TOKEN permissions
         run: |
-          gh auth status
-          gh api /user --jq '.scopes'
+          echo "Checking GITHUB_TOKEN permissions..."
+          gh auth status || echo "gh auth failed"
+          gh api /user --jq '.scopes' || echo "GITHUB_TOKEN does not have API access"
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
