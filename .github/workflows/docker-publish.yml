@@ -13,6 +13,16 @@ jobs:
       packages: write
 
     steps:
+      - name: Verify Dockerfile exists
+        run: ls -la
+
+      - name: Check GitHub Token Scopes
+        run: |
+          gh auth status
+          gh api /user --jq '.scopes'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
       - name: Checkout repo
         uses: actions/checkout@v4
 
