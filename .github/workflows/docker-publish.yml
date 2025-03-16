@@ -14,16 +14,6 @@ jobs:
       id-token: write
 
     steps:
-      - name: Verify Dockerfile exists
-        run: ls -la
-
-      - name: Check GITHUB_TOKEN permissions
-        run: |
-          gh auth status
-          gh api /user --jq '.scopes'
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
       - name: Checkout repo
         uses: actions/checkout@v4
 
