@@ -11,7 +11,7 @@ WORKDIR /app
 COPY package.json yarn.lock ./
 
 # Install all dependencies (including dev dependencies for building)
-RUN corepack prepare yarn@4.7.0 --activate && yarn install --immutable --frozen-lockfile
+RUN corepack prepare yarn@4.7.0 --activate && yarn install --immutable
 
 # Copy the rest of the application
 COPY . .
@@ -19,8 +19,8 @@ COPY . .
 # Build the application
 RUN yarn build
 
-# Prune dev dependencies
-RUN yarn install --immutable --frozen-lockfile --production
+# Install only production dependencies
+RUN yarn workspaces focus --production --all
 
 # Use a multi-stage build for a smaller production image
 FROM node:22-slim
