@@ -1,18 +1,40 @@
-.yarn
-.git
-.github
+# Node.js dependencies
 node_modules
+.yarn
+.pnp.cjs
+.pnp.loader.mjs
+
+# Build artifacts
+dist
 .next
 out
+
+# Logs
+logs
 *.log
-.env*
-.dockerignore
-Dockerfile
-README.md
-.vscode
-.idea
-coverage
-.nyc_output
-*.md
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Environment files
+.env
+.env.local
+.env.development
+.env.production
+.env.test
+
+# System files
+.DS_Store
+Thumbs.db
+
+# Git and editor files
+.git
 .gitignore
-_dropbox
+.idea
+.vscode
+*.swp
+*.swo
+
+# Docker-specific
+Dockerfile
+.dockerignore
