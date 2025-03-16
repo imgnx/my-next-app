@@ -10,32 +10,16 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: read
-      packages: write # ✅ Required for GHCR
+      packages: write # ✅ REQUIRED for GHCR
       id-token: write
 
     steps:
-      - name: Debug GITHUB_TOKEN permissions
-        run: |
-          echo "Checking GITHUB_TOKEN permissions..."
-          gh auth status || echo "gh auth failed"
-          gh api /user --jq '.scopes' || echo "GITHUB_TOKEN does not have API access"
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      # ✅ Ensure GitHub Actions can push to GHCR using GITHUB_TOKEN
+      # ✅ Log in to GHCR
       - name: Log in to GHCR
-        run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u imgnxorg --password-stdin
-
-      # ✅ Debugging step: Verify GITHUB_TOKEN permissions
-      - name: Check GITHUB_TOKEN permissions
-        run: |
-          gh auth status
-          gh api /user --jq '.scopes'
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: echo "${{ secrets.GHCR_PAT }}" | docker login ghcr.io -u imgnxorg --password-stdin
 
       # ✅ Build and tag the Docker image
       - name: Build Docker image
@@ -47,10 +31,10 @@ jobs:
         run: |
           docker push ghcr.io/imgnxorg/my-next-app:latest
 
-      # ✅ Automatically link the package to the repository
+      # ✅ Auto-Link Package to Repo
       - name: Auto-Link Package to Repo
         env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ secrets.GHCR_PAT }} # ✅ Use GHCR_PAT instead of GITHUB_TOKEN
         run: |
           gh api -X PATCH "https://api.github.com/orgs/imgnxorg/packages/container/my-next-app" \
           -f repository="imgnxorg/my-next-app"
