@@ -17,12 +17,12 @@ jobs:
       - name: Verify Dockerfile exists
         run: ls -la
 
-      - name: Check GITHUB_TOKEN permissions
+      - name: Check GHCR_PAT permissions
         run: |
           gh auth status
           gh api /user --jq '.scopes'
         env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ secrets.GHCR_PAT }}
 
       - name: Checkout repo
         uses: actions/checkout@v4
