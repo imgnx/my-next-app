@@ -16,19 +16,38 @@ jobs:
       - name: Checkout repo
         uses: actions/checkout@v3
 
-      - name: Log in to GHCR
-        run: echo "${{ secrets.GHCR_PAT }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
 
-      - name: Build Docker image
-        run: |
-          docker build -t ghcr.io/${{ github.actor }}/my-next-app:latest .
-      - name: Push Docker image
-        run: |
-          docker push ghcr.io/${{ github.actor }}/my-next-app:latest
+      - name: Log in to GHCR
+        uses: docker/login-action@v2
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }} # Using GITHUB_TOKEN instead of GHCR_PAT
+
+      - name: Extract metadata for Docker
+        id: meta
+        uses: docker/metadata-action@v4
+        with:
+          images: ghcr.io/${{ github.repository_owner }}/my-next-app
+          tags: |
+            type=raw,value=latest
+            type=sha,prefix={{branch}}-
+
+      - name: Build and Push Docker image
+        uses: docker/build-push-action@v4
+        with:
+          context: .
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
 
       - name: Auto-Link Package to Repo
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          GH_TOKEN=${{ secrets.GITHUB_TOKEN }} gh api -X PATCH "https://api.github.com/user/packages/container/my-next-app" \
-            -F repository_id=$(gh api repos/${{ github.repository }} --jq '.id')
+          gh api -X PATCH "https://api.github.com/user/packages/container/my-next-app" \
+            -f repository="${{ github.repository }}"
