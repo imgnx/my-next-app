@@ -7,8 +7,8 @@ RUN corepack enable
 # Create and set working directory
 WORKDIR /app
 
-# Copy package files first (for better layer caching)
-COPY package.json yarn.lock ./
+# Copy package files and yarn configuration first
+COPY package.json yarn.lock .yarnrc.yml ./
 
 # Install all dependencies (including dev dependencies for building)
 RUN corepack prepare yarn@4.7.0 --activate && yarn install --immutable
@@ -32,6 +32,7 @@ COPY --from=builder /app/.next ./.next
 COPY --from=builder /app/public ./public
 COPY --from=builder /app/package.json ./package.json
 COPY --from=builder /app/yarn.lock ./yarn.lock
+COPY --from=builder /app/.yarnrc.yml ./.yarnrc.yml
 COPY --from=builder /app/node_modules ./node_modules
 
 # Install curl for healthcheck
