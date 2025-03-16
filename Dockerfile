@@ -26,11 +26,11 @@ RUN corepack prepare yarn@4.7.0 --activate && yarn install --immutable && yarn c
 # Copy the rest of the application
 COPY --chown=nodejs:nodejs . .
 
-# Build the application
-RUN yarn build
-
 # Install only production dependencies
 RUN yarn workspaces focus --production --all
+
+# Build the application
+RUN yarn build
 
 # Production image
 FROM node:22-slim AS runner
