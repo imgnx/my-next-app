@@ -32,13 +32,14 @@ RUN corepack enable && corepack prepare yarn@4.7.0 --activate
 # Force Yarn to use `node_modules`
 ENV YARN_NODE_LINKER=node-modules
 
-# Copy necessary files from builder stage
-COPY --from=builder /app/dist ./dist
+# Copy only necessary files from builder stage
+COPY --from=builder /app/.next ./.next
 COPY --from=builder /app/package.json ./package.json
 COPY --from=builder /app/yarn.lock ./yarn.lock
+COPY --from=builder /app/public ./public
 
 # Install only production dependencies
-RUN yarn install --immutable --production
+RUN yarn workspaces focus -A --production --json
 
 # Expose port 3000
 EXPOSE 3000
