@@ -30,11 +30,3 @@ jobs:
       - name: Push Docker image
         run: |
           docker push ghcr.io/imgnxorg/my-next-app:latest
-
-      # ✅ Auto-Link Package to Repo
-      - name: Auto-Link Package to Repo
-        env:
-          GH_TOKEN: ${{ secrets.GHCR_PAT }} # ✅ Use GHCR_PAT instead of GITHUB_TOKEN
-        run: |
-          gh api -X PATCH "https://api.github.com/orgs/imgnxorg/packages/container/my-next-app" \
-          -f repository="imgnxorg/my-next-app"
