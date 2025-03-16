@@ -1,4 +1,4 @@
-# Use a more specific and existing Node.js version (node:22-slim doesn't exist yet)
+# Use a more specific and existing Node.js version
 FROM node:20-slim
 
 # Enable Corepack to manage Yarn versions
@@ -11,8 +11,7 @@ WORKDIR /app
 COPY package.json yarn.lock .yarnrc.yml ./
 
 # Install dependencies using the correct Yarn version
-RUN corepack prepare yarn@4.0.2 --activate &&
-  yarn install --immutable --frozen-lockfile
+RUN corepack prepare yarn@4.0.2 --activate && yarn install --immutable --frozen-lockfile
 
 # Copy the rest of the application
 COPY . .
@@ -33,15 +32,17 @@ COPY --from=0 /app/package.json ./package.json
 COPY --from=0 /app/yarn.lock ./yarn.lock
 COPY --from=0 /app/.yarnrc.yml ./.yarnrc.yml
 
+# Install curl for healthcheck
+RUN apt-get update && apt-get install -y curl && rm -rf /var/lib/apt/lists/*
+
 # Expose the port your app runs on
 EXPOSE 3000
 
 # Set environment variables
-ENV NODE_ENV=production \
-  PORT=3000
+ENV NODE_ENV=production PORT=3000
 
-HEALTHCHECK --interval=30s --timeout=30s --start-period=5s --retries=3 \
-  CMD curl -f http://localhost:3000/api/health || exit 1
+# Add healthcheck
+HEALTHCHECK --interval=30s --timeout=30s --start-period=5s --retries=3 CMD curl -f http://localhost:3000/api/health || exit 1
 
 # Start the application
 CMD ["yarn", "start"]
