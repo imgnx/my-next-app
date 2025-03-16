@@ -24,7 +24,7 @@ jobs:
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }} # Using GITHUB_TOKEN instead of GHCR_PAT
+          password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Extract metadata for Docker
         id: meta
@@ -45,9 +45,10 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
-      - name: Auto-Link Package to Repo
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          gh api -X PATCH "https://api.github.com/user/packages/container/my-next-app" \
-            -f repository="${{ github.repository }}"
+      - name: Update repo description
+        uses: peter-evans/dockerhub-description@v3
+        with:
+          registry: ghcr.io
+          repository: ${{ github.repository_owner }}/my-next-app
+          readme-filepath: ./README.md
+          token: ${{ secrets.GITHUB_TOKEN }}

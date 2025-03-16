@@ -24,12 +24,17 @@ FROM node:20-slim
 
 WORKDIR /app
 
+# Enable Corepack in the final stage
+RUN corepack enable
+
 # Copy only necessary files from builder
 COPY --from=0 /app/.next ./.next
 COPY --from=0 /app/public ./public
-COPY --from=0 /app/node_modules ./node_modules
 COPY --from=0 /app/package.json ./package.json
 COPY --from=0 /app/yarn.lock ./yarn.lock
+
+# Install production dependencies
+RUN corepack prepare yarn@4.0.2 --activate && yarn install --immutable --frozen-lockfile --production
 
 # Install curl for healthcheck
 RUN apt-get update && apt-get install -y curl && rm -rf /var/lib/apt/lists/*
