@@ -27,7 +27,7 @@ RUN corepack prepare yarn@4.7.0 --activate && yarn install --immutable && yarn c
 COPY --chown=nodejs:nodejs . .
 
 # Install only production dependencies
-RUN yarn workspaces focus --production --all
+RUN yarn workspaces focus --production
 
 # Build the application
 RUN yarn build
