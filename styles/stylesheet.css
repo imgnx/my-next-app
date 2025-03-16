@@ -1,6 +1,33 @@
 html {
-  background-image: url("https://storage.googleapis.com/re_imgnx/Assets/drafting-board.png");
-  background-attachment: fixed;
+  /* background-image: url("https://storage.googleapis.com/re_imgnx/Assets/drafting-board.png"); */
+  background-color: #202020;
+  background-blend-mode: difference;
   background-size: contain;
   background-position: center;
+  background-attachment: fixed;
+}
+
+@keyframes drop-out {
+  from {
+    opacity: 1;
+    text-shadow: 0 0 0px #ffffffff;
+  }
+
+  to {
+    opacity: 0;
+    text-shadow: 0 0 30px #ffffffff;
+  }
+}
+
+h1.display {
+  text-shadow: 0 0 0px #ffffffff;
+  will-change: opacity;
+  opacity: 1;
+  animation: drop-out 10s ease-in-out forwards;
+  animation-delay: 2s;
+  font-family: Georgia, "Times New Roman", Times, serif;
+  text-align: center;
+  font-size: 8rem;
+  font-weight: 1;
+  color: transparent;
 }
