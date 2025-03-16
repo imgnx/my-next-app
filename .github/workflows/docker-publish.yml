@@ -11,12 +11,13 @@ jobs:
     permissions:
       contents: read
       packages: write
+      id-token: write
 
     steps:
       - name: Verify Dockerfile exists
         run: ls -la
 
-      - name: Check GitHub Token Scopes
+      - name: Check GITHUB_TOKEN permissions
         run: |
           gh auth status
           gh api /user --jq '.scopes'
